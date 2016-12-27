@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     StorageReference mStorageLocation;
     DatabaseReference mDatabaseReferenceImages;
 
-    ListView mImagesListView;
-    CaptionatorImageListAdapter mImagesAdapter;
+    RecyclerView mImagesRecyclerView;
+    CaptionatorImageRecyclerAdapter mImagesAdapter;
 
 
     @Override
@@ -55,14 +55,20 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseReferenceImages = FirebaseDatabase.getInstance().getReference().child(CAPTION_IMAGES_DATABASE_PATH);
 
         //Get a reference to the storage location
-        mStorageLocation = FirebaseStorage.getInstance().getReference().child(CaptionatorImageListAdapter.CAPTION_IMAGES_STORAGE_PATH);
+        mStorageLocation = FirebaseStorage.getInstance().getReference().child(CaptionatorImageRecyclerAdapter.CAPTION_IMAGES_STORAGE_PATH);
 
 
 
-        // Setup the ListView
-        mImagesListView = (ListView) findViewById(R.id.captionator_images_list_view);
-        mImagesAdapter = new CaptionatorImageListAdapter(this,CaptionatorImage.class, R.layout.main_list_view_item, mDatabaseReferenceImages);
-        mImagesListView.setAdapter(mImagesAdapter);
+        // Setup the RecyclerView
+        mImagesRecyclerView = (RecyclerView) findViewById(R.id.captionator_images_recycler_view);
+        mImagesRecyclerView.setHasFixedSize(true);
+        mImagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mImagesAdapter = new CaptionatorImageRecyclerAdapter(
+                CaptionatorImage.class,
+                R.layout.main_recycler_view_item,
+                CaptionatorImageRecyclerAdapter.CaptionatorItemHolder.class,
+                mDatabaseReferenceImages);
+        mImagesRecyclerView.setAdapter(mImagesAdapter);
 
     }
 
