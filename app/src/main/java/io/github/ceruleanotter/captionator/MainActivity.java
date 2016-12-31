@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView mImagesRecyclerView;
     CaptionatorImageRecyclerAdapter mImagesAdapter;
+
 
 
     @Override
@@ -62,12 +64,20 @@ public class MainActivity extends AppCompatActivity {
         // Setup the RecyclerView
         mImagesRecyclerView = (RecyclerView) findViewById(R.id.captionator_images_recycler_view);
         mImagesRecyclerView.setHasFixedSize(true);
-        mImagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mImagesRecyclerView.setLayoutManager(layoutManager);
+
+        // Set a divider
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mImagesRecyclerView.getContext(),
+                layoutManager.getOrientation());
+        mImagesRecyclerView.addItemDecoration(dividerItemDecoration);
+
         mImagesAdapter = new CaptionatorImageRecyclerAdapter(
                 CaptionatorImage.class,
                 R.layout.main_recycler_view_item,
                 CaptionatorImageRecyclerAdapter.CaptionatorItemHolder.class,
-                mDatabaseReferenceImages);
+                mDatabaseReferenceImages,
+                this);
         mImagesRecyclerView.setAdapter(mImagesAdapter);
 
     }
@@ -117,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             // Set the download URL to the message box, so that the user can send it to the database
                             CaptionatorImage image = new CaptionatorImage(
                                     downloadUrl.toString(),
-                                    "anon",
-                                    System.currentTimeMillis());
+                                    "anon");
                             mDatabaseReferenceImages.push().setValue(image);
                         }
                     });

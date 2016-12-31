@@ -13,10 +13,10 @@ public class CaptionatorImage {
     public CaptionatorImage() {
     }
 
-    public CaptionatorImage(String url, String author, long date) {
+    public CaptionatorImage(String url, String author) {
         this.url = url;
         this.author = author;
-        this.date = date;
+        this.date = System.currentTimeMillis();
     }
 
     public String getUrl() {
