@@ -78,7 +78,9 @@ public class CaptionActivity extends AppCompatActivity {
                         .setPositiveButton("Add Caption", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                Timber.d("Add caption %s to list %s", addCaptionEditText.getText().toString(), imageId);
+                                DatabaseReference captionRef = mCaptionLocation.push();
+                                Caption c = new Caption(addCaptionEditText.getText().toString(), "anon");
+                                captionRef.setValue(c);
                             }
                         });
 
