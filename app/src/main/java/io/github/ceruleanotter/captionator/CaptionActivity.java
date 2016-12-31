@@ -67,8 +67,31 @@ public class CaptionActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment dialog = AddCaptionDialogFragment.newInstance(imageId);
-                dialog.show(CaptionActivity.this.getSupportFragmentManager(), "AddCaptionDialogFragment");
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CaptionActivity.this);
+                LayoutInflater inflater = CaptionActivity.this.getLayoutInflater();
+                View rootView = inflater.inflate(R.layout.dialog_add_caption, null);
+                final EditText addCaptionEditText = (EditText) rootView.findViewById(R.id.add_caption_edit_text);
+
+                alertDialogBuilder.setView(rootView)
+                /* Add action buttons */
+                        .setPositiveButton("Add Caption", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                Timber.d("Add caption %s to list %s", addCaptionEditText.getText().toString(), imageId);
+                            }
+                        });
+
+                alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
             }
         });
 
@@ -91,58 +114,4 @@ public class CaptionActivity extends AppCompatActivity {
 //        mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
 
     }
-
-
-    public static class AddCaptionDialogFragment extends DialogFragment {
-
-        private String mImageID;
-
-        public static AddCaptionDialogFragment newInstance(String imageID) {
-            AddCaptionDialogFragment dialog = new AddCaptionDialogFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString(IMAGE_ID_EXTRA, imageID);
-            dialog.setArguments(bundle);
-            return dialog;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            mImageID = getArguments().getString(IMAGE_ID_EXTRA);
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            // Get the layout inflater
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View rootView = inflater.inflate(R.layout.dialog_add_caption, null);
-            EditText addCaptionEditText = (EditText) rootView.findViewById(R.id.add_caption_edit_text);
-
-
-//            addCaptionEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//                @Override
-//                public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-//                    if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-//                        // Add list
-//                    }
-//                    return true;
-//                }
-//            });
-
-            builder.setView(rootView)
-                /* Add action buttons */
-                    .setPositiveButton("Add Caption", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            Timber.d("Add shopping list");
-                        }
-                    });
-
-            return builder.create();
-        }
-    }
-
-
 }
