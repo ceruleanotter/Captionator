@@ -1,26 +1,25 @@
 package io.github.ceruleanotter.captionator;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import io.github.ceruleanotter.captionator.models.Caption;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
@@ -31,8 +30,8 @@ public class CaptionActivity extends AppCompatActivity {
     RecyclerView mCaptionsRecyclerView;
     CaptionRecyclerAdapter mCaptionAdapter;
 
-    public static final String CAPTION_STORAGE_PATH = "captions";
-    public static final String CAPTION_VOTES_STORAGE_PATH = "caption_votes";
+    public static final String CAPTION_DATABASE_PATH = "captions";
+    public static final String CAPTION_VOTES_DATABASE_PATH = "caption_votes";
 
     public static final String IMAGE_ID_EXTRA = "image_id_extra";
 
@@ -55,11 +54,38 @@ public class CaptionActivity extends AppCompatActivity {
 
         // TODO Load the image into the image view
         // Get ref to database
-        mImageLocation = FirebaseDatabase.getInstance().getReference().child(CaptionatorImageRecyclerAdapter.CAPTION_IMAGES_STORAGE_PATH).child(imageId);
+        final ImageView imageView = (ImageView) findViewById(R.id.caption_image_view);
+        mImageLocation = FirebaseDatabase.getInstance().getReference().child(MainActivity.CAPTION_IMAGES_DATABASE_PATH).child(imageId);
+        Timber.d("The location is %s ", mImageLocation.toString());
+
+        mImageLocation.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    Toast toast = Toast.makeText(CaptionActivity.this, "Image Deleted", Toast.LENGTH_SHORT);
+                    toast.show();
+                    finish();
+                } else {
+
+                    CaptionatorImage captionImage = dataSnapshot.getValue(CaptionatorImage.class);
+                    Glide.with(CaptionActivity.this)
+                            .load(captionImage.getUrl())
+                            .into(imageView);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast toast = Toast.makeText(CaptionActivity.this, "No permission to view image", Toast.LENGTH_SHORT);
+                toast.show();
+                finish();
+            }
+        });
+
+
 
         // Get the database location for the captions
-        mCaptionLocation = FirebaseDatabase.getInstance().getReference().child(CAPTION_STORAGE_PATH).child(imageId);
-        mVotesLocation = FirebaseDatabase.getInstance().getReference().child(CAPTION_VOTES_STORAGE_PATH).child(imageId);
+        mCaptionLocation = FirebaseDatabase.getInstance().getReference().child(CAPTION_DATABASE_PATH).child(imageId);
+        mVotesLocation = FirebaseDatabase.getInstance().getReference().child(CAPTION_VOTES_DATABASE_PATH).child(imageId);
 
         Timber.d("mVotesLocation is  %s", mVotesLocation);
 
@@ -97,23 +123,19 @@ public class CaptionActivity extends AppCompatActivity {
             }
         });
 
-//        // Setup the RecyclerView
-//        mCaptionsRecyclerView = (RecyclerView) findViewById(R.id.captions_recycler_view);
-//        mCaptionsRecyclerView.setHasFixedSize(true);
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        mCaptionsRecyclerView.setLayoutManager(layoutManager);
-//
-//        // Set a divider
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mCaptionsRecyclerView.getContext(),
-//                layoutManager.getOrientation());
-//        mCaptionsRecyclerView.addItemDecoration(dividerItemDecoration);
-//
-//        mCaptionAdapter = new CaptionRecyclerAdapter(
-//                Caption.class,
-//                R.layout.caption_recycler_view_item,
-//                CaptionRecyclerAdapter.CaptionHolder.class,
-//                mCaptionLocation);
-//        mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
+        // Setup the RecyclerView
+        mCaptionsRecyclerView = (RecyclerView) findViewById(R.id.captions_recycler_view);
+        mCaptionsRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mCaptionsRecyclerView.setLayoutManager(layoutManager);
+
+        //Setup the adapter
+        mCaptionAdapter = new CaptionRecyclerAdapter(
+                Caption.class,
+                R.layout.caption_recycler_view_item,
+                CaptionRecyclerAdapter.CaptionHolder.class,
+                mCaptionLocation);
+        mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
 
     }
 }

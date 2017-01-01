@@ -25,7 +25,7 @@ import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PHOTO_PICKER = 1;
-    private static final String CAPTION_IMAGES_DATABASE_PATH = "images" ;
+    public static final String CAPTION_IMAGES_DATABASE_PATH = "images" ;
 
     StorageReference mStorageLocation;
     DatabaseReference mDatabaseReferenceImages;
