@@ -94,7 +94,6 @@ public class CaptionActivity extends AppCompatActivity {
         Timber.d("mVotesLocation is  %s", mVotesLocation);
 
         mFAB.setOnClickListener(new View.OnClickListener() {
-            @BindView(R.id.add_caption_edit_text) EditText mAddCaptionEditText;
 
             @Override
             public void onClick(View view) {
@@ -102,7 +101,7 @@ public class CaptionActivity extends AppCompatActivity {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CaptionActivity.this);
                 LayoutInflater inflater = CaptionActivity.this.getLayoutInflater();
                 View rootView = inflater.inflate(R.layout.dialog_add_caption, null);
-                ButterKnife.bind(this, rootView);
+                final EditText addCaptionEditText = (EditText) rootView.findViewById(R.id.add_caption_edit_text);
 
                 alertDialogBuilder.setView(rootView)
                 /* Add action buttons */
@@ -110,7 +109,7 @@ public class CaptionActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseReference captionRef = mCaptionLocation.push();
-                                Caption c = new Caption(mAddCaptionEditText.getText().toString(), "anon");
+                                Caption c = new Caption(addCaptionEditText.getText().toString(), "anon");
                                 captionRef.setValue(c);
                             }
                         });
