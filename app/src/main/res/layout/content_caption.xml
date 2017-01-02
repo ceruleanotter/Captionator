@@ -5,24 +5,40 @@
     android:id="@+id/content_caption"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="io.github.ceruleanotter.captionator.CaptionActivity"
-    tools:showIn="@layout/activity_caption"
-    android:orientation="vertical">
+    tools:showIn="@layout/activity_caption">
 
-    <ImageView
-        android:id="@+id/caption_image_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="centerInside"
-        android:background="@color/cardview_dark_background"/>
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/caption_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background"
+            android:scaleType="centerInside" />
+
+        <com.ivankocijan.magicviews.views.MagicTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="16dp"
+            android:text="This is a sentence"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="24sp"
+            app:typeFace="Oswald-Bold.ttf"
+            />
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/captions_recycler_view"
-        android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 
 </LinearLayout>
