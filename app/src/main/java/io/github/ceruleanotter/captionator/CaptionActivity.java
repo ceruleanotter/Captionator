@@ -35,7 +35,7 @@ import io.github.ceruleanotter.captionator.models.Caption;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 import timber.log.Timber;
 
-public class CaptionActivity extends AppCompatActivity {
+public class CaptionActivity extends BaseActivity {
 
     @BindView(R.id.caption_image_view) ImageView mCaptionImageView;
     @BindView(R.id.fab) FloatingActionButton mFAB;
@@ -124,7 +124,7 @@ public class CaptionActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseReference captionRef = mCaptionReference.push();
-                                Caption c = new Caption(addCaptionEditText.getText().toString(), "anon");
+                                Caption c = new Caption(addCaptionEditText.getText().toString(), mCurrentUser.getUid());
                                 captionRef.setValue(c);
                             }
                         });
@@ -193,7 +193,7 @@ public class CaptionActivity extends AppCompatActivity {
         refCaption.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-                String currentUser = "anon";
+                String currentUser = mCurrentUser.getUid();
 
                 Caption c = mutableData.getValue(Caption.class);
                 if (c == null) {

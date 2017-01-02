@@ -24,9 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
-    private static final int REQUEST_CODE_PHOTO_PICKER = 1;
+    private static final int REQUEST_CODE_PHOTO_PICKER = 2;
     public static final String CAPTION_IMAGES_DATABASE_PATH = "images" ;
 
     StorageReference mStorageLocation;
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                             // Set the download URL to the message box, so that the user can send it to the database
                             CaptionatorImage image = new CaptionatorImage(
                                     downloadUrl.toString(),
-                                    "anon");
+                                    mCurrentUser.getUid());
                             mDatabaseReferenceImages.push().setValue(image);
                         }
                     });
