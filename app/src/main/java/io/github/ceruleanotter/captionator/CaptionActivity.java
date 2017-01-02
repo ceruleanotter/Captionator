@@ -137,8 +137,17 @@ public class CaptionActivity extends AppCompatActivity {
                 Caption.class,
                 R.layout.caption_recycler_view_item,
                 CaptionRecyclerAdapter.CaptionHolder.class,
-                mCaptionLocation);
+                mCaptionLocation,
+                this);
         mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
 
+    }
+
+    public void downVote(String mKey) {
+        Timber.d("Down vote on key %s", mKey);
+    }
+
+    public void upVote(String mKey) {
+        Timber.d("Up Vote on key %s", mKey);
     }
 }

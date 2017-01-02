@@ -7,6 +7,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -21,25 +23,25 @@ import timber.log.Timber;
  */
 
 public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, CaptionRecyclerAdapter.CaptionHolder> {
+    CaptionActivity mCaptionActivity;
 
-    public static final String CAPTION_IMAGES_STORAGE_PATH = "captions_images";
-
-    StorageReference mStorageLocation;
-
-    public CaptionRecyclerAdapter(Class<Caption> modelClass, int modelLayout, Class<CaptionHolder> viewHolderClass, Query ref) {
+    public CaptionRecyclerAdapter(Class<Caption> modelClass, int modelLayout, Class<CaptionHolder> viewHolderClass, Query ref, CaptionActivity captionActivity) {
         super(modelClass, modelLayout, viewHolderClass, ref);
-        mStorageLocation = FirebaseStorage.getInstance().getReference().child(CAPTION_IMAGES_STORAGE_PATH);
+        mCaptionActivity = captionActivity;
+
     }
 
 
     @Override
     protected void populateViewHolder(CaptionHolder viewHolder, Caption model, int position) {
-        viewHolder.bindCaption(model);
+        viewHolder.bindCaption(model, this.getRef(position).getKey());
     }
 
 
-    public static class CaptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class CaptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Caption mCaption;
+        String mKey;
+
         @BindView(R.id.author_text_view)
         TextView authorTextView;
         @BindView(R.id.caption_text_view)
@@ -59,8 +61,9 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
             voteDownImageButton.setOnClickListener(this);
         }
 
-        public void bindCaption(Caption c) {
+        public void bindCaption(Caption c, String key) {
             mCaption = c;
+            mKey = key;
             authorTextView.setText(c.getAuthor());
             captionTextView.setText(c.getCaption());
             ratingTextView.setText(Integer.toString(c.getUpvotes() - c.getDownvotes()));
@@ -69,9 +72,11 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
         @Override
         public void onClick(View view) {
             if (view == voteDownImageButton) {
-                Timber.d("Down vote");
+                mCaptionActivity.downVote(mKey);
+
+
             } else if (view == voteUpImageButton) {
-                Timber.d("Up vote");
+                mCaptionActivity.upVote(mKey);
             }
         }
     }
