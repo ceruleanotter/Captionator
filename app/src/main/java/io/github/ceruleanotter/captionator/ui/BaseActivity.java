@@ -1,4 +1,4 @@
-package io.github.ceruleanotter.captionator;
+package io.github.ceruleanotter.captionator.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

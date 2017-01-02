@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".CaptionActivity">
+    tools:context=".ui.CaptionActivity">
 
     <EditText
         android:id="@+id/add_caption_edit_text"

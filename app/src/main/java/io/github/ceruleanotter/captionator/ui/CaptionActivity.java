@@ -1,11 +1,9 @@
-package io.github.ceruleanotter.captionator;
+package io.github.ceruleanotter.captionator.ui;
 
 import android.content.DialogInterface;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
@@ -27,12 +24,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.ivankocijan.magicviews.views.MagicTextView;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.ceruleanotter.captionator.R;
 import io.github.ceruleanotter.captionator.models.Caption;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
+import io.github.ceruleanotter.captionator.utils.FirebaseUtilities;
 import timber.log.Timber;
 
 public class CaptionActivity extends BaseActivity {
@@ -46,16 +44,12 @@ public class CaptionActivity extends BaseActivity {
     @BindView(R.id.captions_recycler_view) RecyclerView mCaptionsRecyclerView;
     CaptionRecyclerAdapter mCaptionAdapter;
 
-    public static final String CAPTION_DATABASE_PATH = "captions";
-    public static final String CAPTION_VOTE_TOTAL_DATABASE_PATH = "votes";
-
     public static final String IMAGE_ID_EXTRA = "image_id_extra";
 
     DatabaseReference mImageReference;
 
     // TODO might need to change to strings
     DatabaseReference mCaptionReference;
-    DatabaseReference mRootReference;
 
     ValueEventListener mCaptionListener;
     Query mFirstCaptionReference;
@@ -69,14 +63,11 @@ public class CaptionActivity extends BaseActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mRootReference = FirebaseDatabase.getInstance().getReference();
-
         // Get the image from the intent
-        final String imageId = getIntent().getStringExtra(IMAGE_ID_EXTRA); // TODO store in constant
+        final String imageId = getIntent().getStringExtra(IMAGE_ID_EXTRA);
 
-        // TODO Load the image into the image view
         // Get ref to database
-        mImageReference = mRootReference.child(MainActivity.CAPTION_IMAGES_DATABASE_PATH).child(imageId);
+        mImageReference = FirebaseUtilities.getImageRef(imageId);
         Timber.d("The location is %s ", mImageReference.toString());
 
         mImageReference.addValueEventListener(new ValueEventListener() {
@@ -105,7 +96,7 @@ public class CaptionActivity extends BaseActivity {
 
 
         // Get the database location for the captions
-        mCaptionReference = mRootReference.child(CAPTION_DATABASE_PATH).child(imageId);
+        mCaptionReference = FirebaseUtilities.getCaptionsRef(imageId);
         Query sortedCaptionReference = mCaptionReference.orderByChild("votes");
 
         mFAB.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +146,7 @@ public class CaptionActivity extends BaseActivity {
         mCaptionAdapter = new CaptionRecyclerAdapter(
                 Caption.class,
                 R.layout.caption_recycler_view_item,
-                CaptionRecyclerAdapter.CaptionHolder.class,
+                CaptionRecyclerAdapter.CaptionItemHolder.class,
                 sortedCaptionReference,
                 this);
         mCaptionsRecyclerView.setAdapter(mCaptionAdapter);

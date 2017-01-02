@@ -1,44 +1,40 @@
-package io.github.ceruleanotter.captionator;
+package io.github.ceruleanotter.captionator.ui;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.ceruleanotter.captionator.R;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
+import io.github.ceruleanotter.captionator.utils.FirebaseUtilities;
 
 public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_PHOTO_PICKER = 2;
-    public static final String CAPTION_IMAGES_DATABASE_PATH = "images" ;
 
-    StorageReference mStorageLocation;
-    DatabaseReference mDatabaseReferenceImages;
+    StorageReference mStorageReference;
+    DatabaseReference mDatabaseImagesReference;
 
     @BindView(R.id.fab) FloatingActionButton mFAB;
     @BindView(R.id.toolbar)Toolbar mToolBar;
 
     @BindView(R.id.captionator_images_recycler_view) RecyclerView mImagesRecyclerView;
-    CaptionatorImageRecyclerAdapter mImagesAdapter;
-
-
+    ImageRecyclerAdapter mImagesAdapter;
 
 
     @Override
@@ -60,11 +56,10 @@ public class MainActivity extends BaseActivity {
         });
 
         // Get ref to database
-        mDatabaseReferenceImages = FirebaseDatabase.getInstance().getReference().child(CAPTION_IMAGES_DATABASE_PATH);
+        mDatabaseImagesReference = FirebaseUtilities.getImagesRef();
 
         //Get a reference to the storage location
-        mStorageLocation = FirebaseStorage.getInstance().getReference().child(CaptionatorImageRecyclerAdapter.CAPTION_IMAGES_STORAGE_PATH);
-
+        mStorageReference = FirebaseUtilities.getStorageRef();
 
 
         // Setup the RecyclerView
@@ -77,11 +72,11 @@ public class MainActivity extends BaseActivity {
                 layoutManager.getOrientation());
         mImagesRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        mImagesAdapter = new CaptionatorImageRecyclerAdapter(
+        mImagesAdapter = new ImageRecyclerAdapter(
                 CaptionatorImage.class,
                 R.layout.main_recycler_view_item,
-                CaptionatorImageRecyclerAdapter.CaptionatorItemHolder.class,
-                mDatabaseReferenceImages,
+                ImageRecyclerAdapter.ImageItemHolder.class,
+                mDatabaseImagesReference,
                 this);
         mImagesRecyclerView.setAdapter(mImagesAdapter);
 
@@ -119,7 +114,7 @@ public class MainActivity extends BaseActivity {
             String imageId = selectedImageUri.getLastPathSegment();
 
             // Get a reference to store file at chat_photos/<FILENAME>
-            StorageReference photoRef = mStorageLocation.child(imageId);
+            StorageReference photoRef = mStorageReference.child(imageId);
 
             // Upload file to Firebase Storage
             photoRef.putFile(selectedImageUri)
@@ -133,7 +128,7 @@ public class MainActivity extends BaseActivity {
                             CaptionatorImage image = new CaptionatorImage(
                                     downloadUrl.toString(),
                                     mCurrentUser.getUid());
-                            mDatabaseReferenceImages.push().setValue(image);
+                            mDatabaseImagesReference.push().setValue(image);
                         }
                     });
         }

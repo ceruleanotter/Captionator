@@ -1,4 +1,4 @@
-package io.github.ceruleanotter.captionator;
+package io.github.ceruleanotter.captionator.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,32 +9,31 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.ceruleanotter.captionator.R;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
+import io.github.ceruleanotter.captionator.utils.FirebaseUtilities;
 
 /**
  * Created by lyla on 12/26/16.
  */
 
-public class CaptionatorImageRecyclerAdapter extends FirebaseRecyclerAdapter<CaptionatorImage,CaptionatorImageRecyclerAdapter.CaptionatorItemHolder> {
+public class ImageRecyclerAdapter extends FirebaseRecyclerAdapter<CaptionatorImage,ImageRecyclerAdapter.ImageItemHolder> {
 
-    public static final String CAPTION_IMAGES_STORAGE_PATH = "captions_images";
-
-    StorageReference mStorageLocation;
+    StorageReference mStorageReference;
     Context mContext;
 
-    public CaptionatorImageRecyclerAdapter(Class<CaptionatorImage> modelClass, int modelLayout, Class<CaptionatorItemHolder> viewHolderClass, Query ref,  Context context) {
+    public ImageRecyclerAdapter(Class<CaptionatorImage> modelClass, int modelLayout, Class<ImageItemHolder> viewHolderClass, Query ref, Context context) {
         super(modelClass, modelLayout, viewHolderClass, ref);
-        mStorageLocation = FirebaseStorage.getInstance().getReference().child(CAPTION_IMAGES_STORAGE_PATH);
+        mStorageReference = FirebaseUtilities.getStorageRef();
         mContext = context;
     }
 
     @Override
-    public void populateViewHolder(CaptionatorItemHolder vh, CaptionatorImage image, final int position) {
+    public void populateViewHolder(ImageItemHolder vh, CaptionatorImage image, final int position) {
         vh.setImage(image.getUrl());
         vh.getmMainView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,11 +47,11 @@ public class CaptionatorImageRecyclerAdapter extends FirebaseRecyclerAdapter<Cap
     }
 
 
-    public static class CaptionatorItemHolder extends RecyclerView.ViewHolder {
+    public static class ImageItemHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.list_image_view) ImageView mImage;
         private final View mMainView;
 
-        public CaptionatorItemHolder(View itemView) {
+        public ImageItemHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mMainView = itemView;

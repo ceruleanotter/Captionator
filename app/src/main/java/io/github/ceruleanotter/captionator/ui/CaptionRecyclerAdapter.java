@@ -1,4 +1,4 @@
-package io.github.ceruleanotter.captionator;
+package io.github.ceruleanotter.captionator.ui;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -7,25 +7,21 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.github.ceruleanotter.captionator.R;
 import io.github.ceruleanotter.captionator.models.Caption;
-import timber.log.Timber;
 
 /**
  * Created by lyla on 12/26/16.
  */
 
-public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, CaptionRecyclerAdapter.CaptionHolder> {
+public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, CaptionRecyclerAdapter.CaptionItemHolder> {
     CaptionActivity mCaptionActivity;
 
-    public CaptionRecyclerAdapter(Class<Caption> modelClass, int modelLayout, Class<CaptionHolder> viewHolderClass, Query ref, CaptionActivity captionActivity) {
+    public CaptionRecyclerAdapter(Class<Caption> modelClass, int modelLayout, Class<CaptionItemHolder> viewHolderClass, Query ref, CaptionActivity captionActivity) {
         super(modelClass, modelLayout, viewHolderClass, ref);
         mCaptionActivity = captionActivity;
 
@@ -33,12 +29,12 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
 
 
     @Override
-    protected void populateViewHolder(CaptionHolder viewHolder, Caption model, int position) {
+    protected void populateViewHolder(CaptionItemHolder viewHolder, Caption model, int position) {
         viewHolder.bindCaption(model, this.getRef(position).getKey(), mCaptionActivity);
     }
 
 
-    public static class CaptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class CaptionItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Caption mCaption;
         String mKey;
         CaptionActivity mCaptionActivity;
@@ -55,7 +51,7 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
         ImageButton voteDownImageButton;
 
 
-        public CaptionHolder(View itemView) {
+        public CaptionItemHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             voteUpImageButton.setOnClickListener(this);
