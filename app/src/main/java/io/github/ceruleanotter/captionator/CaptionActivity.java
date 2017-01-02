@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
@@ -100,6 +101,7 @@ public class CaptionActivity extends AppCompatActivity {
 
         // Get the database location for the captions
         mCaptionReference = mRootReference.child(CAPTION_DATABASE_PATH).child(imageId);
+        Query sortedCaptionReference = mCaptionReference.orderByChild("votes");
 
         mFAB.setOnClickListener(new View.OnClickListener() {
 
@@ -138,6 +140,10 @@ public class CaptionActivity extends AppCompatActivity {
         // Setup the RecyclerView
         mCaptionsRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        //Reverse list
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         mCaptionsRecyclerView.setLayoutManager(layoutManager);
 
         //Setup the adapter
@@ -145,7 +151,7 @@ public class CaptionActivity extends AppCompatActivity {
                 Caption.class,
                 R.layout.caption_recycler_view_item,
                 CaptionRecyclerAdapter.CaptionHolder.class,
-                mCaptionReference,
+                sortedCaptionReference,
                 this);
         mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
 
