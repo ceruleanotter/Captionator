@@ -115,7 +115,7 @@ public class CaptionActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseReference captionRef = mCaptionReference.push();
-                                Caption c = new Caption(addCaptionEditText.getText().toString(), mCurrentUser.getUid());
+                                Caption c = new Caption(addCaptionEditText.getText().toString(), mCurrentUser.getDisplayName(), mCurrentUser.getUid());
                                 captionRef.setValue(c);
                             }
                         });
@@ -159,10 +159,14 @@ public class CaptionActivity extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot capSnapshot: dataSnapshot.getChildren()) {
-                    Timber.d("DataSnapshot is %s ", capSnapshot.toString());
-                    Caption c = capSnapshot.getValue(Caption.class);
-                    mCaptionTextView.setText(c.getCaption());
+                if(!dataSnapshot.hasChildren()) {
+                    mCaptionTextView.setText("Be the first to add a caption");
+                } else {
+                    for (DataSnapshot capSnapshot : dataSnapshot.getChildren()) {
+                        Timber.d("DataSnapshot is %s ", capSnapshot.toString());
+                        Caption c = capSnapshot.getValue(Caption.class);
+                        mCaptionTextView.setText(c.getCaption());
+                    }
                 }
 
             }
@@ -173,8 +177,6 @@ public class CaptionActivity extends BaseActivity {
             }
         });
 
-
-
     }
 
     private void vote(String mKey, final boolean isUp) {
@@ -184,7 +186,7 @@ public class CaptionActivity extends BaseActivity {
         refCaption.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-                String currentUser = mCurrentUser.getUid();
+                String currentUserId = mCurrentUser.getUid();
 
                 Caption c = mutableData.getValue(Caption.class);
                 if (c == null) {
@@ -197,9 +199,9 @@ public class CaptionActivity extends BaseActivity {
                 }
 
                 //if they've already voted
-                if (c.getVoters().containsKey(currentUser)) {
+                if (c.getVoters().containsKey(currentUserId)) {
 
-                    if (c.getVoters().get(currentUser) != isUp) {
+                    if (c.getVoters().get(currentUserId) != isUp) {
                         if (isUp) {
                             // from down vote to up vote
                             c.setVotes(c.getVotes()+2);
@@ -209,7 +211,7 @@ public class CaptionActivity extends BaseActivity {
                             // from down vote to up vote
                             c.setVotes(c.getVotes()-2);
                         }
-                        c.getVoters().put(currentUser, isUp);
+                        c.getVoters().put(currentUserId, isUp);
                     }
 
                 } else {
@@ -222,7 +224,7 @@ public class CaptionActivity extends BaseActivity {
                         c.setVotes(c.getVotes()-1);
                     }
 
-                    c.getVoters().put(currentUser, isUp);
+                    c.getVoters().put(currentUserId, isUp);
                 }
 
                 // Set value and report transaction success

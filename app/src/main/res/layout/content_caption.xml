@@ -28,7 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="16dp"
-            android:text="This is a sentence"
             android:textColor="@color/cardview_light_background"
             android:textSize="24sp"
             app:typeFace="Oswald-Bold.ttf"

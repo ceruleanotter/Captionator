@@ -10,18 +10,20 @@ public class Caption {
     private String caption;
     private long date;
     private String author;
+    private String authorUID;
     private int votes;
     private HashMap<String, Boolean> voters;
 
     public Caption() {
     }
 
-    public Caption(String caption, String author) {
+    public Caption(String caption, String author, String authorUID) {
         this.caption = caption;
         this.date = System.currentTimeMillis();
         this.author = author;
         this.votes = 0;
         this.voters = new HashMap<String, Boolean>();
+        this.authorUID = authorUID;
     }
 
     public String getCaption() {
@@ -43,6 +45,8 @@ public class Caption {
     public HashMap<String, Boolean> getVoters() {
         return voters;
     }
+
+    public String getAuthorUID() { return authorUID; }
 
     public void setVotes(int votes) {
         this.votes = votes;
