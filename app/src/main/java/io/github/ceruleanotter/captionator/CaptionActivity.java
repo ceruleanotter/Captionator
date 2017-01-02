@@ -24,6 +24,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.ivankocijan.magicviews.views.MagicTextView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,8 @@ public class CaptionActivity extends AppCompatActivity {
     @BindView(R.id.caption_image_view) ImageView mCaptionImageView;
     @BindView(R.id.fab) FloatingActionButton mFAB;
     @BindView(R.id.toolbar)Toolbar mToolBar;
+    @BindView(R.id.caption_magic_text_view) MagicTextView mCaptionTextView;
+
 
     @BindView(R.id.captions_recycler_view) RecyclerView mCaptionsRecyclerView;
     CaptionRecyclerAdapter mCaptionAdapter;
@@ -52,8 +55,10 @@ public class CaptionActivity extends AppCompatActivity {
 
     // TODO might need to change to strings
     DatabaseReference mCaptionReference;
-
     DatabaseReference mRootReference;
+
+    ValueEventListener mCaptionListener;
+    Query mFirstCaptionReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +160,30 @@ public class CaptionActivity extends AppCompatActivity {
                 this);
         mCaptionsRecyclerView.setAdapter(mCaptionAdapter);
 
+        /** Set the caption **/
+        //Last because of silly ordering
+        mFirstCaptionReference = mCaptionReference.orderByChild("votes").limitToLast(1);
+
+        mCaptionListener = mFirstCaptionReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot capSnapshot: dataSnapshot.getChildren()) {
+                    Timber.d("DataSnapshot is %s ", capSnapshot.toString());
+                    Caption c = capSnapshot.getValue(Caption.class);
+                    mCaptionTextView.setText(c.getCaption());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
     }
 
     private void vote(String mKey, final boolean isUp) {
@@ -228,5 +257,11 @@ public class CaptionActivity extends AppCompatActivity {
     public void upVote(String mKey) {
         Timber.d("Up Vote on key %s", mKey);
         vote(mKey, true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mFirstCaptionReference.removeEventListener(mCaptionListener);
     }
 }

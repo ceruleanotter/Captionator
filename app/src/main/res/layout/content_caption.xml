@@ -23,6 +23,7 @@
             android:scaleType="centerInside" />
 
         <com.ivankocijan.magicviews.views.MagicTextView
+            android:id="@+id/caption_magic_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
