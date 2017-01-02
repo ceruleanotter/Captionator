@@ -20,6 +20,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,8 +32,12 @@ public class MainActivity extends AppCompatActivity {
     StorageReference mStorageLocation;
     DatabaseReference mDatabaseReferenceImages;
 
-    RecyclerView mImagesRecyclerView;
+    @BindView(R.id.fab) FloatingActionButton mFAB;
+    @BindView(R.id.toolbar)Toolbar mToolBar;
+
+    @BindView(R.id.captionator_images_recycler_view) RecyclerView mImagesRecyclerView;
     CaptionatorImageRecyclerAdapter mImagesAdapter;
+
 
 
 
@@ -39,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolBar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -62,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Setup the RecyclerView
-        mImagesRecyclerView = (RecyclerView) findViewById(R.id.captionator_images_recycler_view);
         mImagesRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mImagesRecyclerView.setLayoutManager(layoutManager);

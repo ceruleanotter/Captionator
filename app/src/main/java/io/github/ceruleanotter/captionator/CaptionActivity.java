@@ -21,13 +21,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.github.ceruleanotter.captionator.models.Caption;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 import timber.log.Timber;
 
 public class CaptionActivity extends AppCompatActivity {
 
-    RecyclerView mCaptionsRecyclerView;
+    @BindView(R.id.caption_image_view) ImageView mCaptionImageView;
+    @BindView(R.id.fab) FloatingActionButton mFAB;
+    @BindView(R.id.toolbar)Toolbar mToolBar;
+
+    @BindView(R.id.captions_recycler_view) RecyclerView mCaptionsRecyclerView;
     CaptionRecyclerAdapter mCaptionAdapter;
 
     public static final String CAPTION_DATABASE_PATH = "captions";
@@ -43,9 +49,8 @@ public class CaptionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_caption);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolBar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -54,7 +59,6 @@ public class CaptionActivity extends AppCompatActivity {
 
         // TODO Load the image into the image view
         // Get ref to database
-        final ImageView imageView = (ImageView) findViewById(R.id.caption_image_view);
         mImageLocation = FirebaseDatabase.getInstance().getReference().child(MainActivity.CAPTION_IMAGES_DATABASE_PATH).child(imageId);
         Timber.d("The location is %s ", mImageLocation.toString());
 
@@ -70,7 +74,7 @@ public class CaptionActivity extends AppCompatActivity {
                     CaptionatorImage captionImage = dataSnapshot.getValue(CaptionatorImage.class);
                     Glide.with(CaptionActivity.this)
                             .load(captionImage.getUrl())
-                            .into(imageView);
+                            .into(mCaptionImageView);
                 }
             }
             @Override
@@ -89,15 +93,16 @@ public class CaptionActivity extends AppCompatActivity {
 
         Timber.d("mVotesLocation is  %s", mVotesLocation);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @BindView(R.id.add_caption_edit_text) EditText mAddCaptionEditText;
+
             @Override
             public void onClick(View view) {
 
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CaptionActivity.this);
                 LayoutInflater inflater = CaptionActivity.this.getLayoutInflater();
                 View rootView = inflater.inflate(R.layout.dialog_add_caption, null);
-                final EditText addCaptionEditText = (EditText) rootView.findViewById(R.id.add_caption_edit_text);
+                ButterKnife.bind(this, rootView);
 
                 alertDialogBuilder.setView(rootView)
                 /* Add action buttons */
@@ -105,7 +110,7 @@ public class CaptionActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 DatabaseReference captionRef = mCaptionLocation.push();
-                                Caption c = new Caption(addCaptionEditText.getText().toString(), "anon");
+                                Caption c = new Caption(mAddCaptionEditText.getText().toString(), "anon");
                                 captionRef.setValue(c);
                             }
                         });
@@ -124,7 +129,6 @@ public class CaptionActivity extends AppCompatActivity {
         });
 
         // Setup the RecyclerView
-        mCaptionsRecyclerView = (RecyclerView) findViewById(R.id.captions_recycler_view);
         mCaptionsRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mCaptionsRecyclerView.setLayoutManager(layoutManager);

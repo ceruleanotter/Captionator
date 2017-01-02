@@ -12,6 +12,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.github.ceruleanotter.captionator.models.CaptionatorImage;
 
 /**
@@ -46,15 +48,13 @@ public class CaptionatorImageRecyclerAdapter extends FirebaseRecyclerAdapter<Cap
     }
 
 
-
-
     public static class CaptionatorItemHolder extends RecyclerView.ViewHolder {
-        private final ImageView mImage;
+        @BindView(R.id.list_image_view) ImageView mImage;
         private final View mMainView;
 
         public CaptionatorItemHolder(View itemView) {
             super(itemView);
-            mImage = (ImageView) itemView.findViewById(R.id.list_image_view);
+            ButterKnife.bind(this, itemView);
             mMainView = itemView;
 
         }
