@@ -34,13 +34,14 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
 
     @Override
     protected void populateViewHolder(CaptionHolder viewHolder, Caption model, int position) {
-        viewHolder.bindCaption(model, this.getRef(position).getKey());
+        viewHolder.bindCaption(model, this.getRef(position).getKey(), mCaptionActivity);
     }
 
 
-    public class CaptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class CaptionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Caption mCaption;
         String mKey;
+        CaptionActivity mCaptionActivity;
 
         @BindView(R.id.author_text_view)
         TextView authorTextView;
@@ -61,12 +62,14 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
             voteDownImageButton.setOnClickListener(this);
         }
 
-        public void bindCaption(Caption c, String key) {
+        public void bindCaption(Caption c, String key, CaptionActivity activity) {
             mCaption = c;
             mKey = key;
             authorTextView.setText(c.getAuthor());
             captionTextView.setText(c.getCaption());
             ratingTextView.setText(Integer.toString(c.getUpvotes() - c.getDownvotes()));
+            // TODO looking into binding this every time
+            mCaptionActivity  = activity;
         }
 
         @Override
