@@ -67,7 +67,7 @@ public class CaptionRecyclerAdapter extends FirebaseRecyclerAdapter<Caption, Cap
             mKey = key;
             authorTextView.setText(c.getAuthor());
             captionTextView.setText(c.getCaption());
-            ratingTextView.setText(Integer.toString(c.getUpvotes() - c.getDownvotes()));
+            ratingTextView.setText(Integer.toString(c.getVotes()));
             // TODO looking into binding this every time
             mCaptionActivity  = activity;
         }

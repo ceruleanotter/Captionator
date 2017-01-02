@@ -43,8 +43,7 @@ public class CaptionActivity extends AppCompatActivity {
     CaptionRecyclerAdapter mCaptionAdapter;
 
     public static final String CAPTION_DATABASE_PATH = "captions";
-    public static final String CAPTION_UP_VOTE_TOTAL_DATABASE_PATH = "upvotes";
-    public static final String CAPTION_DOWN_VOTE_TOTAL_DATABASE_PATH = "downvotes";
+    public static final String CAPTION_VOTE_TOTAL_DATABASE_PATH = "votes";
 
     public static final String IMAGE_ID_EXTRA = "image_id_extra";
 
@@ -177,13 +176,12 @@ public class CaptionActivity extends AppCompatActivity {
                     if (c.getVoters().get(currentUser) != isUp) {
                         if (isUp) {
                             // from down vote to up vote
-                            c.setUpvotes(c.getUpvotes() + 1);
-                            c.setDownvotes(c.getDownvotes() - 1);
+                            c.setVotes(c.getVotes()+2);
 
                         } else {
                             // from up vote to down vote
-                            c.setUpvotes(c.getUpvotes() - 1);
-                            c.setDownvotes(c.getDownvotes() + 1);
+                            // from down vote to up vote
+                            c.setVotes(c.getVotes()-2);
                         }
                         c.getVoters().put(currentUser, isUp);
                     }
@@ -191,9 +189,11 @@ public class CaptionActivity extends AppCompatActivity {
                 } else {
                  //otherwise if they haven't voted
                     if (isUp) {
-                        c.setUpvotes(c.getUpvotes() + 1);
+                        // from down vote to up vote
+                        c.setVotes(c.getVotes()+1);
                     } else {
-                        c.setDownvotes(c.getDownvotes() + 1);
+                        // from down vote to up vote
+                        c.setVotes(c.getVotes()-1);
                     }
 
                     c.getVoters().put(currentUser, isUp);

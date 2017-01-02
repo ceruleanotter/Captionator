@@ -10,8 +10,7 @@ public class Caption {
     private String caption;
     private long date;
     private String author;
-    private int upvotes;
-    private int downvotes;
+    private int votes;
     private HashMap<String, Boolean> voters;
 
     public Caption() {
@@ -21,8 +20,7 @@ public class Caption {
         this.caption = caption;
         this.date = System.currentTimeMillis();
         this.author = author;
-        this.upvotes = 0;
-        this.downvotes = 0;
+        this.votes = 0;
         this.voters = new HashMap<String, Boolean>();
     }
 
@@ -38,24 +36,16 @@ public class Caption {
         return author;
     }
 
-    public int getUpvotes() {
-        return upvotes;
-    }
-
-    public int getDownvotes() {
-        return downvotes;
+    public int getVotes() {
+        return votes;
     }
 
     public HashMap<String, Boolean> getVoters() {
         return voters;
     }
 
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
-    }
-
-    public void setDownvotes(int downvotes) {
-        this.downvotes = downvotes;
+    public void setVotes(int votes) {
+        this.votes = votes;
     }
 
     public void setVoters(HashMap<String, Boolean> voters) {
